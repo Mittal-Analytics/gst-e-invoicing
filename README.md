@@ -5,17 +5,17 @@ This is the python library for interacting with GST's E-invoicing portal.
 ## Usage
 
 ```python
-from gst_irn import Session, Invoice, InvoiceItem, InvoiceItemTax, InvoiceItemDiscount
+from gst_irn import Session, Invoice, InvoiceItem
 
 session = Session(
-	'GSTIN',
-	client_id='CLIENT_ID',
-	client_secret='CLIENT_SECRET',
-	username='USERNAME',
-	password='PASSWORD',
-	app_key='APP_KEY',
-	is_sandbox=True,
-	force_generate=False,
+    'GSTIN',
+    client_id='CLIENT_ID',
+    client_secret='CLIENT_SECRET',
+    username='USERNAME',
+    password='PASSWORD',
+    app_key='APP_KEY',
+    is_sandbox=True,
+    force_generate=False,
 )
 
 session.get_token()
@@ -26,9 +26,9 @@ session.get_token()
 seller = session.get_party('SELLER_GSTIN')
 buyer = session.get_party('BUYER_GSTIN')
 items = [
-	InvoiceItem(
-		hsn_sac='HSN_SAC',
-	)
+    InvoiceItem(
+        hsn_sac='HSN_SAC',
+    )
 ]
 
 # provide document details for the invoice
