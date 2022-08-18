@@ -53,4 +53,7 @@ print(einvoice.json)
 
 ## Technical details
 
-Schema: https://www.cbic.gov.in/resources/htdocs-cbec/gst/notfctn-60-central-tax-english-2020.pdf
+Schema Spec: https://www.cbic.gov.in/resources/htdocs-cbec/gst/notfctn-60-central-tax-english-2020.pdf
+Simplified Spec: https://einvoice1.gst.gov.in/Documents/EINVOICE_SCHEMA.xlsx
+
+The key's used in JSON file are CamelCase.  The attributes we use in the Python library are snake_case version of the same.
