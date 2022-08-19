@@ -1,7 +1,7 @@
 name: gst-e-envoicing
 on: [push]
 jobs:
-  run test:
+  system_checks_and_tests:
     runs-on: ubuntu-latest
 
     steps:
