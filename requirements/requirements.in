@@ -1,3 +1,5 @@
+python-dotenv==0.20.0
+
 # Run the following after updating this file:
 #    pip-compile --upgrade --output-file=requirements/requirements.txt requirements/requirements.in
 #
