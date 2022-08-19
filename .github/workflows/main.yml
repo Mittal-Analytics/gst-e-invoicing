@@ -1,0 +1,24 @@
+name: gst-e-envoicing
+on: [push]
+jobs:
+  run test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python version
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Checking python version
+        run: python --version
+
+      - name: Update system
+        run: sudo apt-get update
+
+      - name: Install dependencies from requirements
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/requirements-dev.txt

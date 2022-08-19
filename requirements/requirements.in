@@ -1,0 +1,6 @@
+# Run the following after updating this file:
+#    pip-compile --upgrade --output-file=requirements/requirements.txt requirements/requirements.in
+#
+# to list new packages: pip list --outdated --not-required
+# to sync pip installations: pip-sync requirements/requirements.txt
+# the sync will uninstall unused packages too
