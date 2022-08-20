@@ -20,11 +20,6 @@ def encrypt_with_public_key(message, public_key):
     return encoded_encrypted_msg
 
 
-def _get_public_key():
-    with open("public_keys/einv_sandbox.pem", "r") as key_file:
-        return key_file.read()
-
-
 class Session:
     gstin = CONFIG.get("GSTIN")
     client_id = CONFIG.get("CLIENT_ID")
@@ -57,7 +52,7 @@ class Session:
         json_data = json.dumps(data)
         encoded_data = base64.b64encode(json_data.encode())
 
-        public_key = RSA.importKey(_get_public_key())
+        public_key = RSA.importKey(CONFIG.get("PUBLIC_KEY"))
 
         # encrypt using e-Invoice public Key
         encoded_encrypted_data = encrypt_with_public_key(
