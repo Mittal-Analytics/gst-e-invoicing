@@ -4,6 +4,9 @@ python-dotenv==0.20.0
 # to get response from API
 requests==2.28.1
 
+# to encrypt and decrypt data
+pycryptodome==3.15.0
+
 # Run the following after updating this file:
 #    pip-compile --upgrade --output-file=requirements/requirements.txt requirements/requirements.in
 #
