@@ -39,9 +39,7 @@ class Session:
         self.password = password
         self.public_key = public_key
 
-        self._base_url = (
-            "https://einv-apisandbox.nic.in/" if is_sandbox else ""
-        )
+        self._base_url = "https://einv-apisandbox.nic.in" if is_sandbox else ""
         self.token = None
 
     def get_token(self, force_regenerate_token=False):
