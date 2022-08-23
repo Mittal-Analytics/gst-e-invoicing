@@ -57,3 +57,22 @@ Schema Spec: https://www.cbic.gov.in/resources/htdocs-cbec/gst/notfctn-60-centra
 Simplified Spec: https://einvoice1.gst.gov.in/Documents/EINVOICE_SCHEMA.xlsx
 
 The key's used in JSON file are CamelCase.  The attributes we use in the Python library are snake_case version of the same.
+
+
+## Development
+
+Setting up dev environment:
+
+```bash
+# create and activate virtual env
+python3 -m venv .venv
+source .venv/bin/activate
+
+# install requirements
+pip install -r requirements/requirements-dev.txt
+
+# provide credentials
+cp .env.sample .env
+# edit and update the credentials in .env file
+vi .env
+```

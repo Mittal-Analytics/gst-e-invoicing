@@ -23,5 +23,6 @@ concall_tools.egg-info
 dist
 
 #keys
-public_keys/*
+public_keys
+PublicKey
 
