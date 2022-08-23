@@ -2,63 +2,76 @@ import base64
 import json
 
 import requests
-from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Cipher import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
-from dotenv import dotenv_values
-
-CONFIG = dotenv_values(".env")
-import base64
-
-import requests
 
 
-def encrypt_with_public_key(message, public_key):
-    encryptor = PKCS1_OAEP.new(public_key)
-    encrypted_msg = encryptor.encrypt(message)
-    encoded_encrypted_msg = base64.b64encode(encrypted_msg)
+def encrypt_message(message, public_key_str):
+    public_key = RSA.import_key(public_key_str)
+    cipher = PKCS1_v1_5.new(public_key)
+    encrypted_msg = cipher.encrypt(message)
+    encoded_encrypted_msg = base64.b64encode(encrypted_msg).decode()
     return encoded_encrypted_msg
 
 
-class Session:
-    gstin = CONFIG.get("GSTIN")
-    client_id = CONFIG.get("CLIENT_ID")
-    client_secret = CONFIG.get("CLIENT_SECRET")
-    username = CONFIG.get("USERNAME")
-    password = CONFIG.get("PASSWORD")
-    is_sandbox = True
-    force_generate = False
+def get_app_key():
+    aes_key = get_random_bytes(32)
+    readable = base64.b64encode(aes_key).decode()
+    return readable
 
-    # function to get authenticated token
-    def get_token(self):
-        url = "https://einv-apisandbox.nic.in/eivital/v1.04/auth"
+
+class Session:
+    def __init__(
+        self,
+        gstin,
+        client_id,
+        client_secret,
+        username,
+        password,
+        public_key,
+        is_sandbox=True,
+    ):
+        self.gstin = gstin
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.username = username
+        self.password = password
+        self.public_key = public_key
+
+        self._base_url = (
+            "https://einv-apisandbox.nic.in/" if is_sandbox else ""
+        )
+        self.token = None
+
+    def get_token(self, force_regenerate_token=False):
+        url = f"{self._base_url}/eivital/v1.04/auth"
+
         # request headers
         headers = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-            "Gstin": self.gstin,
+            "client-id": self.client_id,
+            "client-secret": self.client_secret,
+            "gstin": self.gstin,
         }
 
         # request payload
-        data = {
+        payload = {
             "UserName": self.username,
             "Password": self.password,
-            "AppKey": base64.b64encode(get_random_bytes(32)).decode(),
-            "ForceRefreshAccessToken": self.force_generate,
+            "AppKey": get_app_key(),
+            "ForceRefreshAccessToken": force_regenerate_token,
         }
 
-        # Json containing the Credentials is encoded
-        # using Base64 and then encrypted using e-Invoice public Key
-        json_data = json.dumps(data)
-        encoded_data = base64.b64encode(json_data.encode())
+        # convert payload to json string
+        payload = json.dumps(payload)
 
-        public_key = RSA.importKey(CONFIG.get("PUBLIC_KEY"))
+        # base64 encoding of payload
+        payload = base64.b64encode(payload.encode())
 
         # encrypt using e-Invoice public Key
-        encoded_encrypted_data = encrypt_with_public_key(
-            encoded_data, public_key
-        )
+        public_key_str = self.public_key
+        payload = encrypt_message(payload, public_key_str)
 
-        payload = {"Data": encoded_encrypted_data.decode()}
+        payload = {"Data": payload}
         response = requests.post(url, json=payload, headers=headers)
         return response.json()

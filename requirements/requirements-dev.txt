@@ -3,6 +3,10 @@
 # for generation of requirements
 pip-tools==6.8.0
 
+# for debugging
+ipython
+ipdb
+
 # for linting
 flake8==5.0.4
 black==22.6.0
