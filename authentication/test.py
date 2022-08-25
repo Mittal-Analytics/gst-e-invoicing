@@ -8,8 +8,8 @@ CONFIG = dotenv_values(".env")
 
 
 class AuthTokenTestCase(unittest.TestCase):
-    def test_get_auth_token(self):
-        session = Session(
+    def setUp(self):
+        self.session = Session(
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
@@ -18,6 +18,23 @@ class AuthTokenTestCase(unittest.TestCase):
             public_key=CONFIG["PUBLIC_KEY"],
             is_sandbox=True,
         )
-        token = session.get_token()
-        status = token.get("Status")
-        self.assertEqual(status, 1, msg=token)
+
+    def test_get_auth_token(self):
+        auth_response = self.session.get_token()
+        status = auth_response.get("Status")
+        self.assertEqual(status, 1, msg=auth_response)
+
+    def test_get_party_details(self):
+        party_gstin_details = self.session.get_party_details(
+            party_gstin=CONFIG["GSTIN"]
+        )
+        self.assertEqual(party_gstin_details.get("Gstin"), CONFIG["GSTIN"])
+        self.assertEqual(
+            party_gstin_details.get("TradeName"),
+            "MITTAL ANALYTICS PRIVATE LIMITED",
+        )
+        self.assertEqual(
+            party_gstin_details.get("AddrBnm"), "NIKHILESH PALACE"
+        )
+        self.assertEqual(party_gstin_details.get("AddrLoc"), "LUCKNOW")
+        self.assertEqual(party_gstin_details.get("DtReg"), "2017-07-01")
