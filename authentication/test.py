@@ -8,7 +8,6 @@ from authentication.session import (
     ewb_dtls,
     get,
     item_dtls,
-    ship_dtls,
     tran_dtls,
     val_dtls,
 )
