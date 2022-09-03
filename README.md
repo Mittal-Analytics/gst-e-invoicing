@@ -18,7 +18,7 @@ session = Session(
     force_generate=False,
 )
 
-session.get_token()
+session.generate_token()
 
 # create invoice object
 # use Session.get_party to automatically fetch details
