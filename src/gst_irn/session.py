@@ -189,9 +189,17 @@ class Session:
         headers = self._get_request_headers()
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
-            data = response.json()
-            if data["Status"] == 1:
-                return data
+            response = response.json()
+            if response["Status"] == 1:
+                encrypted_data = response["Data"]
+                data = (
+                    _decrypt_with_aes(encrypted_data, self._auth_sek)
+                    .decode()
+                    .strip()
+                )
+                # strip non-printable unicode bytes in the end
+                data = "".join(d for d in data if d.isprintable())
+                return json.loads(data)
             else:
                 _raise_error(response)
         else:
