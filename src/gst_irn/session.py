@@ -45,14 +45,16 @@ def _encrypt_with_aes(message, key) -> str:
         algorithm=algorithms.AES(key=key), mode=modes.ECB()
     ).encryptor()
 
-    encrypted_msg = encryptor.update(message)
-
-    # padding with PKCS7
+    # pad the message with PKCS7
     padder = sym_padding.PKCS7(128).padder()
-    encrypted_msg = padder.update(encrypted_msg) + padder.finalize()
+    message = padder.update(message) + padder.finalize()
 
-    encoded_encrypted_msg = base64.b64encode(encrypted_msg).decode()
-    return encoded_encrypted_msg
+    # encrypt the message
+    message = encryptor.update(message)
+
+    # base64 encode the message
+    message = base64.b64encode(message).decode()
+    return message
 
 
 def _get_decrypted_sek(sek, app_key):
@@ -87,11 +89,14 @@ def _raise_error(response):
     try:
         err = response.json()
     except Exception:
-        err = response.content
+        try:
+            err = response.content
+        except Exception:
+            err = response
 
     err = pformat(err, indent=4)
     logging.error(err)
-    raise RequestError(f"Status Code: {response.status_code}")
+    raise RequestError()
 
 
 class Session:
@@ -201,8 +206,8 @@ class Session:
         headers = self._get_request_headers()
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
-            json_response = response.json()
-            if json_response["Status"] == 1:
+            response = response.json()
+            if response["Status"] == 1:
                 encrypted_data = response["Data"]
                 data = (
                     _decrypt_with_aes(encrypted_data, self._auth_sek)
