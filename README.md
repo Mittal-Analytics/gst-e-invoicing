@@ -46,7 +46,9 @@ einvoice = session.generate_einvoice(invoice)
 # access irn and qr-code
 print(einvoice.irn)
 # prints irn
-print(einvoice.qr_code)
+print(einvoice.invoice)
+# prints decoded invoice as signed by the system
+print(einvoice.qr_code_img_base64)
 # prints base64 usable image for qr-code
 print(einvoice.raw)
 # prints raw json response with signed e-invoice
