@@ -33,6 +33,10 @@ def _decrypt_with_aes(message, key) -> bytes:
         algorithm=algorithms.AES(key=key), mode=modes.ECB()
     ).decryptor()
     decrypted = decryptor.update(message) + decryptor.finalize()
+
+    # remove padding with pkcs7
+    unpadder = sym_padding.PKCS7(128).unpadder()
+    decrypted = unpadder.update(decrypted) + unpadder.finalize()
     return decrypted
 
 
@@ -59,12 +63,8 @@ def _encrypt_with_aes(message, key) -> str:
 
 def _get_decrypted_sek(sek, app_key):
     decrypted_sek = _decrypt_with_aes(sek, app_key)
-    # unpad - with pkcs7
-    unpadder = sym_padding.PKCS7(128).unpadder()
-    un_padded = unpadder.update(decrypted_sek)
-    un_padded = un_padded + unpadder.finalize()
     # base64 encoding
-    decrypted_sek = base64.b64encode(un_padded).decode()
+    decrypted_sek = base64.b64encode(decrypted_sek).decode()
     return decrypted_sek
 
 
@@ -184,8 +184,6 @@ class Session:
                 .decode()
                 .strip()
             )
-            # strip non-printable unicode bytes in the end
-            data = "".join(d for d in data if d.isprintable())
             return json.loads(data)
         else:
             _raise_error(response)
@@ -214,8 +212,6 @@ class Session:
                     .decode()
                     .strip()
                 )
-                # strip non-printable unicode bytes in the end
-                data = "".join(d for d in data if d.isprintable())
                 return json.loads(data)
             else:
                 _raise_error(response)
