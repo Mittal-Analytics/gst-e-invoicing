@@ -1,22 +1,24 @@
 import base64
 import json
 import logging
+import os
 from pprint import pformat
 
 import requests
-from Crypto.Cipher import AES, PKCS1_v1_5
-from Crypto.PublicKey import RSA
-from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad, unpad
+from cryptography.hazmat.primitives import padding as sym_padding
+from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 
 def _encrypt_with_rsa_pub_key(message, public_key_str) -> str:
     """
     encrypt message with RSA by given public key
     """
-    public_key = RSA.import_key(public_key_str)
-    cipher = PKCS1_v1_5.new(public_key)
-    encrypted_msg = cipher.encrypt(message)
+    public_key = load_pem_public_key(public_key_str.encode())
+    encrypted_msg = public_key.encrypt(
+        plaintext=message, padding=asym_padding.PKCS1v15()
+    )
     encoded_encrypted_msg = base64.b64encode(encrypted_msg).decode()
     return encoded_encrypted_msg
 
@@ -27,8 +29,10 @@ def _decrypt_with_aes(message, key) -> bytes:
     """
     message = base64.b64decode(message)
     key = base64.b64decode(key)
-    cipher = AES.new(key, AES.MODE_ECB)
-    decrypted = cipher.decrypt(message)
+    decryptor = Cipher(
+        algorithm=algorithms.AES(key=key), mode=modes.ECB()
+    ).decryptor()
+    decrypted = decryptor.update(message) + decryptor.finalize()
     return decrypted
 
 
@@ -37,8 +41,16 @@ def _encrypt_with_aes(message, key) -> str:
     encrypts the message with the given AES key
     """
     key = base64.b64decode(key)
-    cipher = AES.new(key, AES.MODE_ECB)
-    encrypted_msg = cipher.encrypt(pad(message, AES.block_size))
+    encryptor = Cipher(
+        algorithm=algorithms.AES(key=key), mode=modes.ECB()
+    ).encryptor()
+
+    encrypted_msg = encryptor.update(message)
+
+    # padding with PKCS7
+    padder = sym_padding.PKCS7(128).padder()
+    encrypted_msg = padder.update(encrypted_msg) + padder.finalize()
+
     encoded_encrypted_msg = base64.b64encode(encrypted_msg).decode()
     return encoded_encrypted_msg
 
@@ -46,7 +58,9 @@ def _encrypt_with_aes(message, key) -> str:
 def _get_decrypted_sek(sek, app_key):
     decrypted_sek = _decrypt_with_aes(sek, app_key)
     # unpad - with pkcs7
-    un_padded = unpad(decrypted_sek, AES.block_size)
+    unpadder = sym_padding.PKCS7(128).unpadder()
+    un_padded = unpadder.update(decrypted_sek)
+    un_padded = un_padded + unpadder.finalize()
     # base64 encoding
     decrypted_sek = base64.b64encode(un_padded).decode()
     return decrypted_sek
@@ -56,7 +70,7 @@ def _get_app_key() -> str:
     """
     creates a random app_key of 32 byte
     """
-    aes_key = get_random_bytes(32)
+    aes_key = os.urandom(32)
     readable = base64.b64encode(aes_key).decode()
     return readable
 
@@ -157,7 +171,6 @@ class Session:
 
         headers = self._get_request_headers()
         response = requests.get(url, headers=headers)
-
         if response.status_code == 200:
             response = response.json()
             encrypted_data = response["Data"]
@@ -185,13 +198,20 @@ class Session:
         # encrypt payload
         encrypt_message = _encrypt_with_aes(payload, self._auth_sek)
         payload = {"Data": encrypt_message}
-
         headers = self._get_request_headers()
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
-            data = response.json()
-            if data["Status"] == 1:
-                return data
+            json_response = response.json()
+            if json_response["Status"] == 1:
+                encrypted_data = response["Data"]
+                data = (
+                    _decrypt_with_aes(encrypted_data, self._auth_sek)
+                    .decode()
+                    .strip()
+                )
+                # strip non-printable unicode bytes in the end
+                data = "".join(d for d in data if d.isprintable())
+                return json.loads(data)
             else:
                 _raise_error(response)
         else:
