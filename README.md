@@ -44,14 +44,12 @@ invoice = Invoice(
 einvoice = session.generate_einvoice(invoice)
 
 # access irn and qr-code
-print(einvoice.irn)
+print(einvoice['Irn'])
 # prints irn
-print(einvoice.invoice)
-# prints decoded invoice as signed by the system
-print(einvoice.qr_code_img_base64)
-# prints base64 usable image for qr-code
-print(einvoice.raw)
-# prints raw json response with signed e-invoice
+
+# print qr-code
+from gst_irn.qr import get_qr_code_image_base64
+qr_code_image = get_qr_code_image_base64(einvoice['SignedQRCode'])
 ```
 
 ## Technical details
