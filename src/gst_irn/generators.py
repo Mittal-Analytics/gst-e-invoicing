@@ -6,7 +6,7 @@ def _to_camel_case_dict(**kwargs):
     return {_to_camel_case(k): v for k, v in kwargs.items()}
 
 
-def get_tran_dtls(*, tax_sch="GST", sup_typ="B2B", **kwargs):
+def get_tran_dtls(tax_sch="GST", sup_typ="B2B", **kwargs):
     return _to_camel_case_dict(tax_sch=tax_sch, sup_typ=sup_typ, **kwargs)
 
 
