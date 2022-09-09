@@ -15,15 +15,17 @@ Use it in your code:
 ```python
 from gst_irn import Session, Invoice, InvoiceItem
 
+with open('public_key.pem') as f:
+    public_key = f.read()
+
 session = Session(
     'GSTIN',
     client_id='CLIENT_ID',
     client_secret='CLIENT_SECRET',
     username='USERNAME',
     password='PASSWORD',
-    app_key='APP_KEY',
+    public_key=public_key,
     is_sandbox=True,
-    force_generate=False,
 )
 
 session.generate_token()

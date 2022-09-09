@@ -10,8 +10,6 @@ readme = "README.md"
 authors = [{ name = "Mittal Analytics Pvt Ltd", email = "pratyush@hey.com" }]
 license = { file = "LICENSE" }
 dependencies = [
-    # for reading environment variables from .env file
-    "python-dotenv",
     # for http requests
     "requests",
     # for encrypting and decrypting data
@@ -24,7 +22,8 @@ dependencies = [
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
-dev = ["flake8", "black", "ipdb", "bumpver", "build", "twine"]
+dev = ["python-dotenv", "flake8", "black", "ipdb", "bumpver", "build", "twine"]
+
 
 [project.urls]
 Homepage = "https://github.com/Mittal-Analytics/gst-e-invoicing"
