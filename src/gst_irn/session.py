@@ -2,13 +2,18 @@ import base64
 import json
 import logging
 import os
+from collections import namedtuple
+from io import BytesIO
 from pprint import pformat
 
+import qrcode
 import requests
 from cryptography.hazmat.primitives import padding as sym_padding
 from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
+
+Einvoice = namedtuple("Einvoice", "irn, qr_code, signed_invoice, raw")
 
 
 def _encrypt_with_rsa_pub_key(message, public_key_str) -> str:
@@ -101,6 +106,29 @@ def _raise_error(response):
     err = pformat(err, indent=4)
     logging.error(err)
     raise RequestError()
+
+
+def _pil_to_base64(pil_img):
+    output = BytesIO()
+    pil_img.save(output, format="PNG")
+    img = output.getvalue()
+    # encode to base64
+    img = base64.b64encode(img)
+    img = "data:image/jpeg;base64," + img.decode()
+    return img
+
+
+def _get_base64_qr_img(qr_code_data):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=5,
+        border=2,
+    )
+    qr.add_data(qr_code_data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    return _pil_to_base64(img)
 
 
 class Session:
@@ -208,7 +236,15 @@ class Session:
             if response["Status"] == 1:
                 encrypted_data = response["Data"]
                 data = _decrypt_with_aes(encrypted_data, self._auth_sek)
-                return json.loads(data)
+                data = json.loads(data)
+                qr_code = data.get("SignedQRCode")
+                qr_code_img = _get_base64_qr_img(qr_code)
+                return Einvoice(
+                    irn=data.get("Irn"),
+                    qr_code=qr_code_img,
+                    signed_invoice=data.get("SignedInvoice"),
+                    raw=data,
+                )
             else:
                 _raise_error(response)
         else:

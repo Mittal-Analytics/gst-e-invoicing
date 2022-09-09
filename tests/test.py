@@ -110,4 +110,4 @@ class AuthTokenTestCase(unittest.TestCase):
             ),
         )
         einvoice = session.generate_e_invoice(invoice)
-        self.assertTrue("Irn" in einvoice, msg=einvoice)
+        self.assertTrue("Irn" in einvoice.raw, msg=einvoice)
