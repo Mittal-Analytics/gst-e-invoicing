@@ -11,18 +11,30 @@ def _pil_to_base64(pil_img):
 
     # encode to base64
     img = base64.b64encode(img)
-    img = "data:image/png;base64," + img.decode()
-    return img
+    return img.decode()
 
 
 def get_qr_code_image_base64(message):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=5,
-        border=2,
     )
     qr.add_data(message)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
     return _pil_to_base64(img)
+
+
+def get_qr_code_image_html(message, pixels=250):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+    )
+    qr.add_data(message)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    base64 = _pil_to_base64(img)
+
+    pixels = int(pixels)
+    html = f'<img src="data:image/png;base64,{base64}" style="width: {pixels}px; height: auto">'
+    return html

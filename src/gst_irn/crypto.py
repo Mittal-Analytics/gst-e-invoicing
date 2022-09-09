@@ -5,6 +5,9 @@ from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
+# specs for algorithms are available at:
+# https://einv-apisandbox.nic.in/FaqsonAPI.html
+
 
 def encrypt_with_rsa_pub_key(message, public_key_str) -> str:
     """

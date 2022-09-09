@@ -15,6 +15,7 @@ from src.gst_irn import (
 from src.gst_irn.codes import states
 from src.gst_irn.converters import to_buyer
 from src.gst_irn.generators import get_invoice, get_seller_dtls
+from tests.snapshot import compare_snapshot
 
 CONFIG = dotenv_values(".env")
 
@@ -115,4 +116,6 @@ class AuthTokenTestCase(unittest.TestCase):
 
     def test_qr_code(self):
         qr_code = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkVEQzU3REUxMzU4QjMwMEJBOUY3OTM0MEE2Njk2ODMxRjNDODUwNDciLCJ0eXAiOiJKV1QiLCJ4NXQiOiI3Y1Y5NFRXTE1BdXA5NU5BcG1sb01mUElVRWMifQ.eyJkYXRhIjoie1wiU2VsbGVyR3N0aW5cIjpcIjA5QUFKQ003MTkxRTFaNVwiLFwiQnV5ZXJHc3RpblwiOlwiMjlBV0dQVjcxMDdCMVoxXCIsXCJEb2NOb1wiOlwiMzVkN2RmOGQtZmNlNy00OVwiLFwiRG9jVHlwXCI6XCJJTlZcIixcIkRvY0R0XCI6XCIxMi8xMS8yMDIxXCIsXCJUb3RJbnZWYWxcIjoxMTIsXCJJdGVtQ250XCI6MSxcIk1haW5Ic25Db2RlXCI6XCI5OTg0MzFcIixcIklyblwiOlwiMzk5N2Q2ZGJlNTg1ZGJmYzkzYTg1NWNmMmFhZDFhNDEyYWM3ZGYwMjMxYWI3ODc1ODUxYTE1ZTFiYTNmNGRmNFwiLFwiSXJuRHRcIjpcIjIwMjItMDktMDkgMTM6MzM6MDBcIn0iLCJpc3MiOiJOSUMifQ.RPd1hjjuky7Xcs550YTUXXISjrd-g11OrUZn1pS9uDq1Er-wHNeFmWmI72kEbYsL-tofo5mepnqAVKfJDeUZlGk_s597IiZMobmJb2yvEtbPiOs5Hy7lTQav3iD3XtdWIoKp26WqH1RBSCAQQEpzRwMCVO6G7oh9Uq5kf4GI1wuyj0aJT7ThNOrsM5cEyAoDTfdWvkr9MJdNLFt7mBaLMfEAyHe4DJEWJaPENJoicRwifon6FV7zGXcz1Wbxjg12o31470vaaKs2niOD-GBpkQ7W0p-Ac47CG8u2Z_q6QdFflAAWYVzGINwff_bioyXFDVdzt7RJwCDY_a7RKVvd8g"
-        self.assertTrue(qr.get_qr_code_image_base64(qr_code))
+
+        html = qr.get_qr_code_image_html(qr_code)
+        compare_snapshot(html, "tests/test_assets/qr_code.html")
