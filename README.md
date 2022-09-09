@@ -78,4 +78,7 @@ pip install -r requirements/requirements-dev.txt
 cp .env.sample .env
 # edit and update the credentials in .env file
 vi .env
+
+# running tests
+python -m unittest
 ```
