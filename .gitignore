@@ -19,8 +19,9 @@ _direnv_hook
 
 docs/_build
 .venv
-concall_tools.egg-info
+gst_e_invoicing.egg-info
 dist
+build
 
 #keys
 public_keys

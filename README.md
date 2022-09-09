@@ -4,6 +4,14 @@ This is the python library for interacting with GST's E-invoicing portal.
 
 ## Usage
 
+Install the library:
+
+```bash
+pip install gst-e-invoicing
+```
+
+Use it in your code:
+
 ```python
 from gst_irn import Session, Invoice, InvoiceItem
 
@@ -72,7 +80,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # install requirements
-pip install -r requirements/requirements-dev.txt
+pip install '.[dev]'
 
 # provide credentials
 cp .env.sample .env

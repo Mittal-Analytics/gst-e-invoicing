@@ -1,7 +1,13 @@
-name: gst-e-envoicing
+name: Automated Testing
+
 on: [push]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  system_checks_and_tests:
+  run_tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,13 +21,12 @@ jobs:
       - name: Checking python version
         run: python --version
 
-      - name: Update system
-        run: sudo apt-get update
-
       - name: Install dependencies from requirements
         run: |
           pip install --upgrade pip
-          pip install -r requirements/requirements-dev.txt
+          pip install wheel
+          pip install .
 
-      - name: Run tests
-        run: python -m unittest
+      - name: Check imports
+        run: |
+          python -c "from gst_irn import Session"

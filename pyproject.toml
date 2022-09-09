@@ -1,0 +1,44 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+version = "0.0.1"
+name = "gst-e-invoicing"
+description = "Python library for generating e-invoices using GST's E-invoicing portal."
+readme = "README.md"
+authors = [{ name = "Mittal Analytics Pvt Ltd", email = "pratyush@hey.com" }]
+license = { file = "LICENSE" }
+dependencies = [
+    # for reading environment variables from .env file
+    "python-dotenv",
+    # for http requests
+    "requests",
+    # for encrypting and decrypting data
+    "cryptography",
+    "PyJWT",
+    # for generating qr codes
+    "qrcode",
+    "Pillow",
+]
+requires-python = ">=3.7"
+
+[project.optional-dependencies]
+dev = ["flake8", "black", "ipdb", "bumpver", "build", "twine"]
+
+[project.urls]
+Homepage = "https://github.com/Mittal-Analytics/gst-e-invoicing"
+
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"'
+]
