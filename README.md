@@ -48,8 +48,10 @@ print(einvoice['Irn'])
 # prints irn
 
 # print qr-code
-from gst_irn.qr import get_qr_code_image_base64
-qr_code_image = get_qr_code_image_base64(einvoice['SignedQRCode'])
+from gst_irn.qr import get_qr_code_image_html
+qr_code_image = get_qr_code_image_html(einvoice['SignedQRCode'])
+qr_code_image
+# prints <img src="...">
 ```
 
 ## Technical details
