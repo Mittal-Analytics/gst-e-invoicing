@@ -23,7 +23,7 @@ def _encrypt_with_rsa_pub_key(message, public_key_str) -> str:
     return encoded_encrypted_msg
 
 
-def _decrypt_with_aes(message, key) -> bytes:
+def _decrypt_with_aes(message, key, raw=False):
     """
     decrypts the message using the given key
     """
@@ -37,6 +37,10 @@ def _decrypt_with_aes(message, key) -> bytes:
     # remove padding with pkcs7
     unpadder = sym_padding.PKCS7(128).unpadder()
     decrypted = unpadder.update(decrypted) + unpadder.finalize()
+
+    # convert to string if not raw
+    if not raw:
+        decrypted = decrypted.decode()
     return decrypted
 
 
@@ -62,7 +66,7 @@ def _encrypt_with_aes(message, key) -> str:
 
 
 def _get_decrypted_sek(sek, app_key):
-    decrypted_sek = _decrypt_with_aes(sek, app_key)
+    decrypted_sek = _decrypt_with_aes(sek, app_key, raw=True)
     # base64 encoding
     decrypted_sek = base64.b64encode(decrypted_sek).decode()
     return decrypted_sek
@@ -179,11 +183,7 @@ class Session:
         if response.status_code == 200:
             response = response.json()
             encrypted_data = response["Data"]
-            data = (
-                _decrypt_with_aes(encrypted_data, self._auth_sek)
-                .decode()
-                .strip()
-            )
+            data = _decrypt_with_aes(encrypted_data, self._auth_sek)
             return json.loads(data)
         else:
             _raise_error(response)
@@ -207,11 +207,7 @@ class Session:
             response = response.json()
             if response["Status"] == 1:
                 encrypted_data = response["Data"]
-                data = (
-                    _decrypt_with_aes(encrypted_data, self._auth_sek)
-                    .decode()
-                    .strip()
-                )
+                data = _decrypt_with_aes(encrypted_data, self._auth_sek)
                 return json.loads(data)
             else:
                 _raise_error(response)

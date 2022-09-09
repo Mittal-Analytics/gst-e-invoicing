@@ -1,3 +1,5 @@
+# from https://einvoice1.gst.gov.in/Documents/EINVOICE_SCHEMA.xlsx
+
 JAMMU_AND_KASMIR = "1"
 HIMACHAL_PRADESH = "2"
 PUNJAB = "3"

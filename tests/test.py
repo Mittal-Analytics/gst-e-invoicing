@@ -31,7 +31,7 @@ class AuthTokenTestCase(unittest.TestCase):
         )
         session.generate_token()
         self.assertTrue(session._auth_token)
-        # self.assertTrue(session._auth_sek)
+        self.assertTrue(session._auth_sek)
 
     def test_get_party_details(self):
         session = Session(
