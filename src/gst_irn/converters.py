@@ -1,7 +1,7 @@
 from .generators import get_buyer_dtls
 
 
-def to_buyer(gst_info):
+def to_buyer(gst_info, place_of_supply):
     addr1 = "{floor}, {street}".format(
         floor=gst_info["AddrFlno"], street=gst_info["AddrSt"]
     )
@@ -9,7 +9,7 @@ def to_buyer(gst_info):
         gstin=gst_info["Gstin"],
         lgl_nm=gst_info["LegalName"],
         addr1=addr1,
-        pos=str(gst_info["StateCode"]),
+        pos=place_of_supply,
         loc=gst_info["AddrLoc"],
         pin=gst_info["AddrPncd"],
         stcd=str(gst_info["StateCode"]),

@@ -12,9 +12,10 @@ from src.gst_irn import (
     get_val_dtls,
     qr,
 )
-from src.gst_irn.codes.states import STATES
+from src.gst_irn.codes import States
 from src.gst_irn.converters import to_buyer
 from src.gst_irn.generators import get_invoice, get_seller_dtls
+from src.gst_irn.session import RequestError
 from tests.snapshot import compare_snapshot
 
 CONFIG = dotenv_values(".env")
@@ -68,16 +69,17 @@ class AuthTokenTestCase(unittest.TestCase):
         )
         session.generate_token()
 
+        place_of_supply = States.KARNATAKA.value
         seller_dtls = get_seller_dtls(
             gstin=CONFIG["GSTIN"],
             lgl_nm="Foobar",
             addr1="foobar",
             loc="foobar",
             pin=226001,
-            stcd="9",
+            stcd=States.UTTAR_PRADESH.value,
         )
         buyer_info = session.get_gst_info("29AWGPV7107B1Z1")
-        buyer_dtls = to_buyer(buyer_info)
+        buyer_dtls = to_buyer(buyer_info, place_of_supply)
 
         invoice = get_invoice(
             tran_dtls=get_tran_dtls(),
@@ -130,17 +132,15 @@ class AuthTokenTestCase(unittest.TestCase):
             is_sandbox=True,
         )
         session.generate_token()
-        irn = (
-            "4d759b28bca2dbc2223e575cd11aa308e8bb0fab487b48741070edd6292c7d63"
-        )
-        e_invoice = session.get_e_invoice_by_irn(irn)
-        self.assertTrue("Irn" in e_invoice, msg=e_invoice)
 
-    def test_duplicate_irn(self):
         invoice = {
             "Version": "1.1",
             "TranDtls": {"TaxSch": "GST", "SupTyp": "B2B"},
-            "DocDtls": {"Typ": "inv", "No": "4", "Dt": "09/09/2022"},
+            "DocDtls": get_doc_dtls(
+                typ="inv",
+                no=str(uuid.uuid4())[:16],
+                dt="12/09/2022",
+            ),
             "SellerDtls": {
                 "Gstin": "09AAJCM7191E1Z5",
                 "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
@@ -174,16 +174,16 @@ class AuthTokenTestCase(unittest.TestCase):
             "ValDtls": {"TotInvVal": 112, "AssVal": 100, "IgstVal": 12},
             "EwbDtls": {"Distance": 10},
         }
-        session = Session(
-            gstin=CONFIG["GSTIN"],
-            client_id=CONFIG["CLIENT_ID"],
-            client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
-            public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
-        )
-        session.generate_token()
         einvoice = session.generate_e_invoice(invoice)
-        self.assertTrue("Irn" in einvoice, msg=einvoice)
-        self.assertTrue("SignedQRCode" in einvoice, msg=einvoice)
+
+        # assert duplicate IRN is raised for same document
+        with self.assertLogs("src.gst_irn.session", level="ERROR") as cm:
+            with self.assertRaises(RequestError) as err:
+                _ = session.generate_e_invoice(invoice)
+        msg, resp = err.exception.args
+        self.assertEqual(msg, "action failed")
+        self.assertTrue(resp["InfoDtls"][0]["Desc"]["Irn"], einvoice["Irn"])
+
+        # verify document by sending irn
+        duplicate = session.get_e_invoice_by_irn(einvoice["Irn"])
+        self.assertEqual(duplicate, einvoice)

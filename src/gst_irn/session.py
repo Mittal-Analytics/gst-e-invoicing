@@ -8,6 +8,8 @@ import requests
 
 from . import crypto
 
+logger = logging.getLogger(__name__)
+
 
 def _get_decrypted_sek(sek, app_key):
     decrypted_sek = crypto.decrypt_with_aes(sek, app_key, raw=True)
@@ -35,9 +37,9 @@ class GenerateTokenError(Exception):
 
 
 def _raise_formatted_error(err, msg):
-    err = pformat(err, indent=4)
-    logging.error(err)
-    raise RequestError(msg)
+    fmt_err = pformat(err, indent=4)
+    logger.error(fmt_err)
+    raise RequestError(msg, err)
 
 
 def _get_data_from_response(response, *, encryption_key):
@@ -49,11 +51,7 @@ def _get_data_from_response(response, *, encryption_key):
                 data = crypto.decrypt_with_aes(data, encryption_key)
                 data = json.loads(data)
             return data
-        elif "ErrorDetails" in response:
-            error_details = response["ErrorDetails"][0]
-            error_code = error_details["ErrorCode"]
-            if int(error_code) == 2150:
-                return response["InfoDtls"][0]
+        else:
             _raise_formatted_error(response, "action failed")
     else:
         _raise_formatted_error(response.text, f"status {response.status_code}")
@@ -125,6 +123,9 @@ class Session:
         }
 
     def get_gst_info(self, party_gstin):
+        """
+        fetches and returns info for the given gst number
+        """
         if not self._auth_sek:
             raise GenerateTokenError()
 
@@ -135,6 +136,11 @@ class Session:
         return _get_data_from_response(response, encryption_key=self._auth_sek)
 
     def generate_e_invoice(self, invoice):
+        """
+        generates and returns e-invoice for given invoice
+
+        e-invoice contains IRN, QR-code and signature
+        """
         if not self._auth_sek:
             raise GenerateTokenError()
 
@@ -149,14 +155,15 @@ class Session:
         payload = {"Data": payload}
         headers = self._get_request_headers()
         response = requests.post(url, json=payload, headers=headers)
-        data = _get_data_from_response(response, encryption_key=self._auth_sek)
-        if "InfCd" in data and data["InfCd"] == "DUPIRN":
-            irn = data["Desc"]["Irn"]
-            data = self.get_e_invoice_by_irn(irn)
-        return data
+        return _get_data_from_response(response, encryption_key=self._auth_sek)
 
-    def get_e_invoice_by_irn(self, irn):
+    def get_e_invoice_by_irn(self, irn, sup_gstin=None):
+        """
+        returns e-invoice for an already generated irn
+        """
         url = f"{self._base_url}/eicore/v1.03/Invoice/irn/{irn}"
         headers = self._get_request_headers()
+        if sup_gstin:
+            headers["sup_gstin"] = sup_gstin
         response = requests.get(url, headers=headers)
         return _get_data_from_response(response, encryption_key=self._auth_sek)
