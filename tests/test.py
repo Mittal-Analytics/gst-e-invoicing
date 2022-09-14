@@ -135,3 +135,54 @@ class AuthTokenTestCase(unittest.TestCase):
         )
         e_invoice = session.get_e_invoice_by_irn(irn)
         self.assertTrue("Irn" in e_invoice, msg=e_invoice)
+
+    def test_duplicate_irn(self):
+        invoice = {
+            "Version": "1.1",
+            "TranDtls": {"TaxSch": "GST", "SupTyp": "B2B"},
+            "DocDtls": {"Typ": "inv", "No": "4", "Dt": "09/09/2022"},
+            "SellerDtls": {
+                "Gstin": "09AAJCM7191E1Z5",
+                "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
+                "Addr1": "NIKHILESH PALACE FIRST FLOOR 17/4 ASHOK MARG",
+                "Loc": "LUCKNOW",
+                "Pin": 226001,
+                "Stcd": "9",
+            },
+            "BuyerDtls": {
+                "Gstin": "37AABCA7365E2ZP",
+                "LglNm": "AVANTI FEEDS LIMITED",
+                "Pos": "37",
+                "Addr1": ", VEMULURU ROAD",
+                "Loc": "VEMULURU",
+                "Pin": 534350,
+                "Stcd": "37",
+            },
+            "ItemList": [
+                {
+                    "SlNo": "4",
+                    "IsServc": "Y",
+                    "HsnCd": "998431",
+                    "UnitPrice": 100,
+                    "IgstAmt": 12,
+                    "TotAmt": 100,
+                    "AssAmt": 100,
+                    "GstRt": 12.0,
+                    "TotItemVal": 112,
+                }
+            ],
+            "ValDtls": {"TotInvVal": 112, "AssVal": 100, "IgstVal": 12},
+            "EwbDtls": {"Distance": 10},
+        }
+        session = Session(
+            gstin=CONFIG["GSTIN"],
+            client_id=CONFIG["CLIENT_ID"],
+            client_secret=CONFIG["CLIENT_SECRET"],
+            username=CONFIG["USERNAME"],
+            password=CONFIG["PASSWORD"],
+            public_key=CONFIG["PUBLIC_KEY"],
+            is_sandbox=True,
+        )
+        session.generate_token()
+        einvoice = session.generate_e_invoice(invoice)
+        self.assertTrue("Irn" in einvoice, msg=einvoice)
