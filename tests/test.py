@@ -12,7 +12,7 @@ from src.gst_irn import (
     get_val_dtls,
     qr,
 )
-from src.gst_irn.codes import states
+from src.gst_irn.codes.states import STATES
 from src.gst_irn.converters import to_buyer
 from src.gst_irn.generators import get_invoice, get_seller_dtls
 from tests.snapshot import compare_snapshot
@@ -74,7 +74,7 @@ class AuthTokenTestCase(unittest.TestCase):
             addr1="foobar",
             loc="foobar",
             pin=226001,
-            stcd=states.UTTAR_PRADESH,
+            stcd="9",
         )
         buyer_info = session.get_gst_info("29AWGPV7107B1Z1")
         buyer_dtls = to_buyer(buyer_info)
