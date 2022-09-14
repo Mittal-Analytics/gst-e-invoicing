@@ -53,8 +53,7 @@ def _get_data_from_response(response, *, encryption_key):
             error_details = response["ErrorDetails"][0]
             error_code = error_details["ErrorCode"]
             if int(error_code) == 2150:
-                info_dtls = response["InfoDtls"][0]
-                return info_dtls["Desc"]
+                return response["InfoDtls"][0]
             _raise_formatted_error(response, "action failed")
     else:
         _raise_formatted_error(response.text, f"status {response.status_code}")
@@ -152,8 +151,8 @@ class Session:
         response = requests.post(url, json=payload, headers=headers)
         data = _get_data_from_response(response, encryption_key=self._auth_sek)
         if "InfCd" in data and data["InfCd"] == "DUPIRN":
-            irn = data["Irn"]
-            self.get_e_invoice_by_irn(irn)
+            irn = data["Desc"]["Irn"]
+            data = self.get_e_invoice_by_irn(irn)
         return data
 
     def get_e_invoice_by_irn(self, irn):

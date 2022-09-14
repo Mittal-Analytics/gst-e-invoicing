@@ -186,3 +186,4 @@ class AuthTokenTestCase(unittest.TestCase):
         session.generate_token()
         einvoice = session.generate_e_invoice(invoice)
         self.assertTrue("Irn" in einvoice, msg=einvoice)
+        self.assertTrue("SignedQRCode" in einvoice, msg=einvoice)
