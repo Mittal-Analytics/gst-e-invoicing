@@ -146,3 +146,9 @@ class Session:
         headers = self._get_request_headers()
         response = requests.post(url, json=payload, headers=headers)
         return _get_data_from_response(response, encryption_key=self._auth_sek)
+
+    def get_e_invoice_by_irn(self, irn):
+        url = f"{self._base_url}/eicore/v1.03/Invoice/irn/{irn}"
+        headers = self._get_request_headers()
+        response = requests.get(url, headers=headers)
+        return _get_data_from_response(response, encryption_key=self._auth_sek)

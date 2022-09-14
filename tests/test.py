@@ -118,3 +118,20 @@ class AuthTokenTestCase(unittest.TestCase):
 
         html = qr.get_qr_code_image_html(qr_code)
         compare_snapshot(html, "tests/test_assets/qr_code.html")
+
+    def test_get_e_invoice_by_irn(self):
+        session = Session(
+            gstin=CONFIG["GSTIN"],
+            client_id=CONFIG["CLIENT_ID"],
+            client_secret=CONFIG["CLIENT_SECRET"],
+            username=CONFIG["USERNAME"],
+            password=CONFIG["PASSWORD"],
+            public_key=CONFIG["PUBLIC_KEY"],
+            is_sandbox=True,
+        )
+        session.generate_token()
+        irn = (
+            "4d759b28bca2dbc2223e575cd11aa308e8bb0fab487b48741070edd6292c7d63"
+        )
+        e_invoice = session.get_e_invoice_by_irn(irn)
+        self.assertTrue("Irn" in e_invoice, msg=e_invoice)
