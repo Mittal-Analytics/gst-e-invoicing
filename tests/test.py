@@ -68,7 +68,6 @@ class AuthTokenTestCase(unittest.TestCase):
         )
         session.generate_token()
 
-        place_of_supply = states.KARNATAKA
         seller_dtls = get_seller_dtls(
             gstin=CONFIG["GSTIN"],
             lgl_nm="Foobar",
@@ -78,7 +77,7 @@ class AuthTokenTestCase(unittest.TestCase):
             stcd=states.UTTAR_PRADESH,
         )
         buyer_info = session.get_gst_info("29AWGPV7107B1Z1")
-        buyer_dtls = to_buyer(buyer_info, place_of_supply)
+        buyer_dtls = to_buyer(buyer_info)
 
         invoice = get_invoice(
             tran_dtls=get_tran_dtls(),
