@@ -49,7 +49,12 @@ def _get_data_from_response(response, *, encryption_key):
                 data = crypto.decrypt_with_aes(data, encryption_key)
                 data = json.loads(data)
             return data
-        else:
+        elif "ErrorDetails" in response:
+            error_details = response["ErrorDetails"][0]
+            error_code = error_details["ErrorCode"]
+            if int(error_code) == 2150:
+                info_dtls = response["InfoDtls"][0]
+                return info_dtls["Desc"]
             _raise_formatted_error(response, "action failed")
     else:
         _raise_formatted_error(response.text, f"status {response.status_code}")
@@ -145,7 +150,11 @@ class Session:
         payload = {"Data": payload}
         headers = self._get_request_headers()
         response = requests.post(url, json=payload, headers=headers)
-        return _get_data_from_response(response, encryption_key=self._auth_sek)
+        data = _get_data_from_response(response, encryption_key=self._auth_sek)
+        if "InfCd" in data and data["InfCd"] == "DUPIRN":
+            irn = data["Irn"]
+            self.get_e_invoice_by_irn(irn)
+        return data
 
     def get_e_invoice_by_irn(self, irn):
         url = f"{self._base_url}/eicore/v1.03/Invoice/irn/{irn}"
