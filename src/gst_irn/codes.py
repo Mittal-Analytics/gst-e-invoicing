@@ -43,3 +43,4 @@ class States(Enum):
     LADAKH = "38"
     OTHER_TERRITORY = "97"
     OTHER_COUNTRIES = "96"
+    CENTRE_JURISDICTION = "99"
