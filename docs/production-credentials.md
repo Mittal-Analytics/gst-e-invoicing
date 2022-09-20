@@ -23,3 +23,4 @@ These are the commercials of few of the GSPs we could get details from:
 | GST Zen   |                8500 |         25000 |                    ❌                    |
 | Adaequare |                7000 |         10000 |                    ✅                    |
 | WebTel |                25000 |         25000 |                    ✅                    |
+| TaxPro |                1050 |         5000 |                    ✅                    |
