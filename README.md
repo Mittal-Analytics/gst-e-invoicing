@@ -26,6 +26,8 @@ session = Session(
     username='USERNAME',
     password='PASSWORD',
     public_key=public_key,
+    # use the sandbox url, or production url
+    # or pass-through APIs provided by GSPs
     base_url='https://einv-apisandbox.nic.in',
 )
 
