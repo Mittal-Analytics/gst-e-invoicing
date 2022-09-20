@@ -16,7 +16,7 @@ You need to create the above credentials on sandbox. After testing the APIs on s
 
 ## Using pass-through APIs from GSPs
 
-For users who don't have a direct access, they can use the pass-through APIs. Pass-through APIs are a mirror of direct APIs but are provided by a GSP (GST Suvidha Partners).
+For users who don't have a direct access, they can use the pass-through APIs. Pass-through APIs are a mirror of direct APIs but are provided by a GSP (GST Suvidha Providers).
 
 The APIs provided by GSPs are either passthrough APIs or custom APIs.
 - Passthrough APIs: these are mirror of direct APIs. These use the same payloads and encryption like the direct APIs.
