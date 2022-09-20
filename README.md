@@ -26,7 +26,7 @@ session = Session(
     username='USERNAME',
     password='PASSWORD',
     public_key=public_key,
-    is_sandbox=True,
+    base_url='https://einv-apisandbox.nic.in',
 )
 
 session.generate_token()

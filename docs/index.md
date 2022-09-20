@@ -10,10 +10,11 @@ You can install the package using PIP
 pip install gst-e-invoicing
 ```
 
-You need to have the credentials to use the library.
+You will also need to obtain the API credentials to use the library.
 
-- [Guide for generating credentials in Sandbox](./sandbox-credentials.md)
-- [Guide for generating credentials in Production](./production-credentials.md)
+- [Guide for obtaining the API credentials](./getting-credentials.md)
+
+The library supports both the direct access as well as pass-through APIs provided by GSPs.
 
 ```python
 from gst_irn import Session, get_invoice, get_seller_dtls
@@ -29,7 +30,9 @@ session = Session(
     username='USERNAME',
     password='PASSWORD',
     public_key=public_key,
-    is_sandbox=True,
+    # use the sandbox url, or production url
+    # or pass-through APIs provided by GSPs
+    base_url='https://einv-apisandbox.nic.in',
 )
 
 session.generate_token()

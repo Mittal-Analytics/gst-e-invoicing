@@ -27,24 +27,48 @@ class AuthTokenTestCase(unittest.TestCase):
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
+            username=CONFIG["API_USERNAME"],
+            password=CONFIG["API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
         )
         session.generate_token()
         self.assertTrue(session._auth_token)
         self.assertTrue(session._auth_sek)
+
+    def test_pass_through_apis(self):
+        gsp_headers = {
+            "aspid": CONFIG["GSP_ASP_ID"],
+            "password": CONFIG["GSP_ASP_PASSWORD"],
+        }
+        session = Session(
+            gstin=CONFIG["GSP_GSTIN"],
+            client_id=CONFIG["GSP_CLIENT_ID"],
+            client_secret=CONFIG["GSP_CLIENT_SECRET"],
+            username=CONFIG["GSP_API_USERNAME"],
+            password=CONFIG["GSP_API_PASSWORD"],
+            public_key=CONFIG["PUBLIC_KEY"],
+            gsp_headers=gsp_headers,
+            base_url="https://gstsandbox.charteredinfo.com/",
+        )
+        session.generate_token()
+        details = session.get_gst_info("29AAACP7879D1Z0")
+        self.assertEqual(
+            details.get("TradeName"), "TALLY SOLUTIONS PVT LTD", msg=details
+        )
+        self.assertEqual(
+            details.get("AddrBnm"), "AMR TECH PARK II B", msg=details
+        )
+        self.assertEqual(details.get("AddrLoc"), "HONGASANDRA")
+        self.assertEqual(details.get("DtReg"), "2017-07-01")
 
     def test_get_party_details(self):
         session = Session(
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
+            username=CONFIG["API_USERNAME"],
+            password=CONFIG["API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
         )
         session.generate_token()
         details = session.get_gst_info("29AAACP7879D1Z0")
@@ -62,10 +86,9 @@ class AuthTokenTestCase(unittest.TestCase):
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
+            username=CONFIG["API_USERNAME"],
+            password=CONFIG["API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
         )
         session.generate_token()
 
@@ -126,10 +149,9 @@ class AuthTokenTestCase(unittest.TestCase):
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
+            username=CONFIG["API_USERNAME"],
+            password=CONFIG["API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
         )
         session.generate_token()
 
