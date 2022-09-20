@@ -42,8 +42,8 @@ class AuthTokenTestCase(unittest.TestCase):
         }
         session = Session(
             gstin=CONFIG["GSP_GSTIN"],
-            client_id=CONFIG["GSP_CLIENT_ID"],
-            client_secret=CONFIG["GSP_CLIENT_SECRET"],
+            client_id="",
+            client_secret="",
             username=CONFIG["GSP_API_USERNAME"],
             password=CONFIG["GSP_API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
