@@ -187,3 +187,131 @@ class AuthTokenTestCase(unittest.TestCase):
         # verify document by sending irn
         duplicate = session.get_e_invoice_by_irn(einvoice["Irn"])
         self.assertEqual(duplicate, einvoice)
+
+    def test_get_irn_by_doc_details(self):
+        session = Session(
+            gstin=CONFIG["GSTIN"],
+            client_id=CONFIG["CLIENT_ID"],
+            client_secret=CONFIG["CLIENT_SECRET"],
+            username=CONFIG["USERNAME"],
+            password=CONFIG["PASSWORD"],
+            public_key=CONFIG["PUBLIC_KEY"],
+            is_sandbox=True,
+        )
+        session.generate_token()
+        doc_type = "inv"
+        doc_number = str(uuid.uuid4())[:16]
+        doc_date = "12/09/2022"
+        invoice = {
+            "Version": "1.1",
+            "TranDtls": {"TaxSch": "GST", "SupTyp": "B2B"},
+            "DocDtls": get_doc_dtls(
+                typ=doc_type,
+                no=doc_number,
+                dt=doc_date,
+            ),
+            "SellerDtls": {
+                "Gstin": "09AAJCM7191E1Z5",
+                "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
+                "Addr1": "NIKHILESH PALACE FIRST FLOOR 17/4 ASHOK MARG",
+                "Loc": "LUCKNOW",
+                "Pin": 226001,
+                "Stcd": "9",
+            },
+            "BuyerDtls": {
+                "Gstin": "37AABCA7365E2ZP",
+                "LglNm": "AVANTI FEEDS LIMITED",
+                "Pos": "37",
+                "Addr1": ", VEMULURU ROAD",
+                "Loc": "VEMULURU",
+                "Pin": 534350,
+                "Stcd": "37",
+            },
+            "ItemList": [
+                {
+                    "SlNo": "4",
+                    "IsServc": "Y",
+                    "HsnCd": "998431",
+                    "UnitPrice": 100,
+                    "IgstAmt": 12,
+                    "TotAmt": 100,
+                    "AssAmt": 100,
+                    "GstRt": 12.0,
+                    "TotItemVal": 112,
+                }
+            ],
+            "ValDtls": {"TotInvVal": 112, "AssVal": 100, "IgstVal": 12},
+            "EwbDtls": {"Distance": 10},
+        }
+        einvoice = session.generate_e_invoice(invoice)
+        invoice_irn = einvoice["Irn"]
+        url = (
+            f"{session._base_url}/eicore/v1.03/Invoice/irnbydocdetails?"
+            f"doctype={doc_type}&docnum={doc_number}&docdate={doc_date}"
+        )
+        response = session.get_response(url)
+        canecel_irn = response["Irn"]
+        self.assertEqual(canecel_irn, invoice_irn)
+
+    def test_cancel_e_invoice(self):
+        session = Session(
+            gstin=CONFIG["GSTIN"],
+            client_id=CONFIG["CLIENT_ID"],
+            client_secret=CONFIG["CLIENT_SECRET"],
+            username=CONFIG["USERNAME"],
+            password=CONFIG["PASSWORD"],
+            public_key=CONFIG["PUBLIC_KEY"],
+            is_sandbox=True,
+        )
+        session.generate_token()
+
+        invoice = {
+            "Version": "1.1",
+            "TranDtls": {"TaxSch": "GST", "SupTyp": "B2B"},
+            "DocDtls": get_doc_dtls(
+                typ="inv",
+                no=str(uuid.uuid4())[:16],
+                dt="12/09/2022",
+            ),
+            "SellerDtls": {
+                "Gstin": "09AAJCM7191E1Z5",
+                "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
+                "Addr1": "NIKHILESH PALACE FIRST FLOOR 17/4 ASHOK MARG",
+                "Loc": "LUCKNOW",
+                "Pin": 226001,
+                "Stcd": "9",
+            },
+            "BuyerDtls": {
+                "Gstin": "37AABCA7365E2ZP",
+                "LglNm": "AVANTI FEEDS LIMITED",
+                "Pos": "37",
+                "Addr1": ", VEMULURU ROAD",
+                "Loc": "VEMULURU",
+                "Pin": 534350,
+                "Stcd": "37",
+            },
+            "ItemList": [
+                {
+                    "SlNo": "4",
+                    "IsServc": "Y",
+                    "HsnCd": "998431",
+                    "UnitPrice": 100,
+                    "IgstAmt": 12,
+                    "TotAmt": 100,
+                    "AssAmt": 100,
+                    "GstRt": 12.0,
+                    "TotItemVal": 112,
+                }
+            ],
+            "ValDtls": {"TotInvVal": 112, "AssVal": 100, "IgstVal": 12},
+            "EwbDtls": {"Distance": 10},
+        }
+        einvoice = session.generate_e_invoice(invoice)
+        url = f"{session._base_url}/eicore/v1.03/Invoice/Cancel"
+        data = {
+            "Irn": einvoice["Irn"],
+            "CnlRsn": "1",
+            "CnlRem": "Wrong entry",
+        }
+        response = session.post_response(url, data=data)
+        self.assertTrue("CancelDate" in response)

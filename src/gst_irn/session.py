@@ -167,3 +167,37 @@ class Session:
             headers["sup_gstin"] = sup_gstin
         response = requests.get(url, headers=headers)
         return _get_data_from_response(response, encryption_key=self._auth_sek)
+
+    def get_response(self, url, headers_addl=None):
+        if not self._auth_sek:
+            raise GenerateTokenError()
+
+        headers = self._get_request_headers()
+        if headers_addl:
+            headers.update(headers_addl)
+        response = requests.get(url, headers=headers)
+        return _get_data_from_response(response, encryption_key=self._auth_sek)
+
+    def post_response(
+        self,
+        url,
+        data,
+        headers_addl=None,
+        force_regenerate_token=False,
+    ):
+        if not self._auth_sek:
+            raise GenerateTokenError()
+
+        # convert payload to json string
+        data = json.dumps(data)
+        payload = data.encode()
+
+        # encrypt payload
+        payload = crypto.encrypt_with_aes(payload, self._auth_sek)
+        payload = {"Data": payload}
+        headers = self._get_request_headers()
+        if headers_addl:
+            headers.update(headers_addl)
+
+        response = requests.post(url, json=payload, headers=headers)
+        return _get_data_from_response(response, encryption_key=self._auth_sek)
