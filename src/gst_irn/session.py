@@ -129,69 +129,29 @@ class Session:
             headers.update(self.gsp_headers)
         return headers
 
-    def get_gst_info(self, party_gstin):
+    def get(self, url, headers_extra=None):
         """
-        fetches and returns info for the given gst number
-        """
-        if not self._auth_sek:
-            raise GenerateTokenError()
-
-        url = f"{self.base_url}/eivital/v1.04/Master/gstin/{party_gstin}"
-
-        headers = self._get_request_headers()
-        response = requests.get(url, headers=headers)
-        return _get_data_from_response(response, encryption_key=self._auth_sek)
-
-    def generate_e_invoice(self, invoice):
-        """
-        generates and returns e-invoice for given invoice
-
-        e-invoice contains IRN, QR-code and signature
+        sends get request to the given url along with authentication headers
+        returns decrypted response
         """
         if not self._auth_sek:
             raise GenerateTokenError()
 
-        url = f"{self.base_url}/eicore/v1.03/Invoice"
-
-        # convert payload to json string
-        data = json.dumps(invoice)
-        payload = data.encode()
-
-        # encrypt payload
-        payload = crypto.encrypt_with_aes(payload, self._auth_sek)
-        payload = {"Data": payload}
         headers = self._get_request_headers()
-        response = requests.post(url, json=payload, headers=headers)
-        return _get_data_from_response(response, encryption_key=self._auth_sek)
+        if headers_extra:
+            headers.update(headers_extra)
 
-    def get_e_invoice_by_irn(self, irn, sup_gstin=None):
-        """
-        returns e-invoice for an already generated irn
-        """
-        url = f"{self.base_url}/eicore/v1.03/Invoice/irn/{irn}"
-        headers = self._get_request_headers()
-        if sup_gstin:
-            headers["sup_gstin"] = sup_gstin
         response = requests.get(url, headers=headers)
         return _get_data_from_response(response, encryption_key=self._auth_sek)
 
-    def get_response(self, url, headers_addl=None):
-        if not self._auth_sek:
-            raise GenerateTokenError()
+    def post(self, url, data, headers_extra=None):
+        """
+        sends post request to the given url
+        - adds authentication headers
+        - encrypts the payload
 
-        headers = self._get_request_headers()
-        if headers_addl:
-            headers.update(headers_addl)
-        response = requests.get(url, headers=headers)
-        return _get_data_from_response(response, encryption_key=self._auth_sek)
-
-    def post_response(
-        self,
-        url,
-        data,
-        headers_addl=None,
-        force_regenerate_token=False,
-    ):
+        returns decrypted response
+        """
         if not self._auth_sek:
             raise GenerateTokenError()
 
@@ -203,8 +163,31 @@ class Session:
         payload = crypto.encrypt_with_aes(payload, self._auth_sek)
         payload = {"Data": payload}
         headers = self._get_request_headers()
-        if headers_addl:
-            headers.update(headers_addl)
+        if headers_extra:
+            headers.update(headers_extra)
 
         response = requests.post(url, json=payload, headers=headers)
         return _get_data_from_response(response, encryption_key=self._auth_sek)
+
+    def get_gst_info(self, party_gstin):
+        """
+        fetches and returns info for the given gst number
+        """
+        url = f"{self.base_url}/eivital/v1.04/Master/gstin/{party_gstin}"
+        return self.get(url)
+
+    def generate_e_invoice(self, invoice):
+        """
+        generates and returns e-invoice for given invoice
+
+        e-invoice contains IRN, QR-code and signature
+        """
+        url = f"{self.base_url}/eicore/v1.03/Invoice"
+        return self.post(url, invoice)
+
+    def get_e_invoice_by_irn(self, irn, sup_gstin=None):
+        """
+        returns e-invoice for an already generated irn
+        """
+        url = f"{self.base_url}/eicore/v1.03/Invoice/irn/{irn}"
+        return self.get(url)

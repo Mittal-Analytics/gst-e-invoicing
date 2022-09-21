@@ -215,10 +215,9 @@ class AuthTokenTestCase(unittest.TestCase):
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
+            username=CONFIG["API_USERNAME"],
+            password=CONFIG["API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
         )
         session.generate_token()
         doc_type = "inv"
@@ -268,10 +267,10 @@ class AuthTokenTestCase(unittest.TestCase):
         einvoice = session.generate_e_invoice(invoice)
         invoice_irn = einvoice["Irn"]
         url = (
-            f"{session._base_url}/eicore/v1.03/Invoice/irnbydocdetails?"
+            f"{session.base_url}/eicore/v1.03/Invoice/irnbydocdetails?"
             f"doctype={doc_type}&docnum={doc_number}&docdate={doc_date}"
         )
-        response = session.get_response(url)
+        response = session.get(url)
         canecel_irn = response["Irn"]
         self.assertEqual(canecel_irn, invoice_irn)
 
@@ -280,10 +279,9 @@ class AuthTokenTestCase(unittest.TestCase):
             gstin=CONFIG["GSTIN"],
             client_id=CONFIG["CLIENT_ID"],
             client_secret=CONFIG["CLIENT_SECRET"],
-            username=CONFIG["USERNAME"],
-            password=CONFIG["PASSWORD"],
+            username=CONFIG["API_USERNAME"],
+            password=CONFIG["API_PASSWORD"],
             public_key=CONFIG["PUBLIC_KEY"],
-            is_sandbox=True,
         )
         session.generate_token()
 
@@ -329,11 +327,11 @@ class AuthTokenTestCase(unittest.TestCase):
             "EwbDtls": {"Distance": 10},
         }
         einvoice = session.generate_e_invoice(invoice)
-        url = f"{session._base_url}/eicore/v1.03/Invoice/Cancel"
+        url = f"{session.base_url}/eicore/v1.03/Invoice/Cancel"
         data = {
             "Irn": einvoice["Irn"],
             "CnlRsn": "1",
             "CnlRem": "Wrong entry",
         }
-        response = session.post_response(url, data=data)
+        response = session.post(url, data=data)
         self.assertTrue("CancelDate" in response)
