@@ -1,4 +1,6 @@
-# GST E-Invoicing Python Library
+# Getting Started
+
+GitHub Link: https://github.com/Mittal-Analytics/gst-e-invoicing
 
 GST E-Invoicing library makes it easy to interact with GST E-Invoicing portal. It allows you to generate IRNs using your custom application.
 
