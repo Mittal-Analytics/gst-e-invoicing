@@ -8,7 +8,6 @@ name = "gst-e-invoicing"
 description = "Python library for generating e-invoices using GST's E-invoicing portal."
 readme = "README.md"
 authors = [{ name = "Mittal Analytics Pvt Ltd", email = "pratyush@hey.com" }]
-license = "LGPLv3"
 dependencies = [
     # for http requests
     "requests",
