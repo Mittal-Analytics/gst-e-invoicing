@@ -1,16 +1,20 @@
-# Python library for GST's E-invoicing portal
+# GST E-Invoicing Python Library
 
-This is the python library for interacting with GST's E-invoicing portal.
+GST E-Invoicing library makes it easy to interact with GST E-Invoicing portal. It allows you to generate IRNs using your custom application.
 
-## Usage
+## Quick Overview
 
-Install the library:
+You can install the package using PIP
 
 ```bash
 pip install gst-e-invoicing
 ```
 
-Use it in your code:
+You will also need to obtain the API credentials to use the library.
+
+- [Guide for obtaining the API credentials](./getting-credentials.md)
+
+The library supports both the direct access as well as pass-through APIs provided by GSPs.
 
 ```python
 from gst_irn import Session, get_invoice, get_seller_dtls
@@ -89,33 +93,4 @@ from gst_irn.qr import get_qr_code_image_html
 qr_code_image = get_qr_code_image_html(einvoice['SignedQRCode'])
 qr_code_image
 # prints <img src="...">
-```
-
-## Technical details
-
-Schema Spec: https://www.cbic.gov.in/resources/htdocs-cbec/gst/notfctn-60-central-tax-english-2020.pdf
-Simplified Spec: https://einvoice1.gst.gov.in/Documents/EINVOICE_SCHEMA.xlsx
-
-The key's used in JSON file are CamelCase.  The attributes we use in the Python library are snake_case version of the same.
-
-
-## Development
-
-Setting up dev environment:
-
-```bash
-# create and activate virtual env
-python3 -m venv .venv
-source .venv/bin/activate
-
-# install requirements
-pip install '.[dev]'
-
-# provide credentials
-cp .env.sample .env
-# edit and update the credentials in .env file
-vi .env
-
-# running tests
-python -m unittest
 ```

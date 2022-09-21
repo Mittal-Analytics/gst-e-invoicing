@@ -18,6 +18,7 @@ _direnv_hook
 .envrc
 
 docs/_build
+site
 .venv
 gst_e_invoicing.egg-info
 dist

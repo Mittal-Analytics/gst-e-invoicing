@@ -66,7 +66,8 @@ class Session:
         username,
         password,
         public_key,
-        is_sandbox=True,
+        base_url="https://einv-apisandbox.nic.in",
+        gsp_headers=None,
     ):
         self.gstin = gstin
         self.client_id = client_id
@@ -75,20 +76,23 @@ class Session:
         self.password = password
         self.public_key = public_key
 
-        self._base_url = "https://einv-apisandbox.nic.in" if is_sandbox else ""
+        self.base_url = base_url
+        self.gsp_headers = gsp_headers
 
         self._auth_token = None
         self._auth_sek = None
 
     def generate_token(self, force_regenerate_token=False):
         app_key = _get_app_key()
-        url = f"{self._base_url}/eivital/v1.04/auth"
+        url = f"{self.base_url}/eivital/v1.04/auth"
         # request headers
         headers = {
             "client-id": self.client_id,
             "client-secret": self.client_secret,
             "gstin": self.gstin,
         }
+        if self.gsp_headers:
+            headers.update(self.gsp_headers)
 
         # request payload
         payload = {
@@ -114,13 +118,16 @@ class Session:
         self._auth_sek = _get_decrypted_sek(data["Sek"], app_key)
 
     def _get_request_headers(self):
-        return {
+        headers = {
             "client-id": self.client_id,
             "client-secret": self.client_secret,
             "gstin": self.gstin,
             "user_name": self.username,
             "AuthToken": self._auth_token,
         }
+        if self.gsp_headers:
+            headers.update(self.gsp_headers)
+        return headers
 
     def get_gst_info(self, party_gstin):
         """
@@ -129,7 +136,7 @@ class Session:
         if not self._auth_sek:
             raise GenerateTokenError()
 
-        url = f"{self._base_url}/eivital/v1.04/Master/gstin/{party_gstin}"
+        url = f"{self.base_url}/eivital/v1.04/Master/gstin/{party_gstin}"
 
         headers = self._get_request_headers()
         response = requests.get(url, headers=headers)
@@ -144,7 +151,7 @@ class Session:
         if not self._auth_sek:
             raise GenerateTokenError()
 
-        url = f"{self._base_url}/eicore/v1.03/Invoice"
+        url = f"{self.base_url}/eicore/v1.03/Invoice"
 
         # convert payload to json string
         data = json.dumps(invoice)
@@ -161,7 +168,7 @@ class Session:
         """
         returns e-invoice for an already generated irn
         """
-        url = f"{self._base_url}/eicore/v1.03/Invoice/irn/{irn}"
+        url = f"{self.base_url}/eicore/v1.03/Invoice/irn/{irn}"
         headers = self._get_request_headers()
         if sup_gstin:
             headers["sup_gstin"] = sup_gstin

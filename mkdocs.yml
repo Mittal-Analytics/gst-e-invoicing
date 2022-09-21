@@ -1,0 +1,4 @@
+site_name: GST E-Invoicing Python Library
+site_url: https://mittal-analytics.github.io/gst-e-invoicing/
+theme:
+  name: manuals-theme

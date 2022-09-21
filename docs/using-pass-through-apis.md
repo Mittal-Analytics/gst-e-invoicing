@@ -1,0 +1,30 @@
+# Using passthrough APIs provided by GSPs
+
+User's who don't have access to direct APIs can use the passthrough APIs provided by GSPs. The details of this are provided in [this guide](./getting-credentials.md).
+
+In case of passthrough APIs, the GSP provide a `gsp_id` and `gsp_password` instead of `client_id` and `client_secret`. We need to add these `id` and `password` in the request headers. The GSP uses them to validate and then replace these headers with their `client_id` and `client_secret`.
+
+The code for using GSP credentials is something like this (test with TaxPro's passthrough APIs):
+
+```python
+from gst_irn import Session
+
+gsp_headers = {
+    "aspid": CONFIG["GSP_ASP_ID"],
+    "password": CONFIG["GSP_ASP_PASSWORD"],
+}
+
+session = Session(
+    gstin=CONFIG["GSP_GSTIN"],
+    client_id="",
+    client_secret="",
+    username=CONFIG["GSP_API_USERNAME"],
+    password=CONFIG["GSP_API_PASSWORD"],
+    public_key=CONFIG["PUBLIC_KEY"],
+    gsp_headers=gsp_headers,
+    base_url="https://gstsandbox.charteredinfo.com/",
+)
+
+session.generate_token()
+details = session.get_gst_info("29AAACP7879D1Z0")
+```
