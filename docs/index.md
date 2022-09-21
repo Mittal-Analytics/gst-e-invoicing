@@ -12,7 +12,7 @@ pip install gst-e-invoicing
 
 You will also need to obtain the API credentials to use the library.
 
-- [Guide for obtaining the API credentials](./getting-credentials.md)
+- [Guide for obtaining the API credentials](./1.%20getting-credentials.md)
 
 The library supports both the direct access as well as pass-through APIs provided by GSPs.
 
