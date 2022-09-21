@@ -3,7 +3,7 @@ requires      = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-version = "0.3.0"
+version = "0.4.0"
 name = "gst-e-invoicing"
 description = "Python library for generating e-invoices using GST's E-invoicing portal."
 readme = "README.md"
@@ -28,7 +28,7 @@ dev = ["python-dotenv", "flake8", "black", "ipdb", "bumpver", "build", "twine"]
 Homepage = "https://github.com/Mittal-Analytics/gst-e-invoicing"
 
 [tool.bumpver]
-current_version = "0.3.0"
+current_version = "0.4.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
