@@ -28,3 +28,5 @@ build
 public_keys
 PublicKey
 
+# tokens cache
+tokens_cache
