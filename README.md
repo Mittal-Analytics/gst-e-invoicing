@@ -2,6 +2,14 @@
 
 This is the python library for interacting with GST's E-invoicing portal.
 
+## Documentation
+
+- [Getting Started](https://mittal-analytics.github.io/gst-e-invoicing/)
+- [Library Methods](https://mittal-analytics.github.io/gst-e-invoicing/3.%20library-documentation/)
+- [Obtaining Credentials](https://mittal-analytics.github.io/gst-e-invoicing/1.%20getting-credentials/)
+- [Using passthrough APIs](https://mittal-analytics.github.io/gst-e-invoicing/2.%20using-pass-through-apis/)
+- [Handling Errors](https://mittal-analytics.github.io/gst-e-invoicing/4.%20handling-errors/)
+
 ## Usage
 
 Install the library:
@@ -91,12 +99,7 @@ qr_code_image
 # prints <img src="...">
 ```
 
-## Technical details
-
-Schema Spec: https://www.cbic.gov.in/resources/htdocs-cbec/gst/notfctn-60-central-tax-english-2020.pdf
-Simplified Spec: https://einvoice1.gst.gov.in/Documents/EINVOICE_SCHEMA.xlsx
-
-The key's used in JSON file are CamelCase.  The attributes we use in the Python library are snake_case version of the same.
+Find the full documentation here: https://mittal-analytics.github.io/gst-e-invoicing/
 
 
 ## Development
