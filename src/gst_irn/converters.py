@@ -2,9 +2,13 @@ from .generators import get_buyer_dtls
 
 
 def to_buyer(gst_info, place_of_supply):
-    addr1 = "{floor}, {street}".format(
-        floor=gst_info["AddrFlno"], street=gst_info["AddrSt"]
-    )
+    parts = [
+        gst_info["AddrBnm"],
+        gst_info["AddrBno"],
+        gst_info["AddrFlno"],
+        gst_info["AddrSt"],
+    ]
+    addr1 = ", ".join(part.strip() for part in parts if part.strip())
     return get_buyer_dtls(
         gstin=gst_info["Gstin"],
         lgl_nm=gst_info["LegalName"],

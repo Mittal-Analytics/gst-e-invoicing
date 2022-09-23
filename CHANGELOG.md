@@ -2,6 +2,10 @@
 
 The changelog was added version 0.3.0 onwards.
 
+## v0.6.0
+
+Improved conversion of address from gst_info.
+
 ## v0.5.0
 
 Added automatic re-use of auth-token. The auth-token generated at IRP (Invoice Registration Portal) is valid for 6 hours. The portal recommends re-using the same token till expiry. This is automatically done by the library now.
