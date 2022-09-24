@@ -2,7 +2,7 @@
 
 The changelog was added version 0.3.0 onwards.
 
-## v0.8.0
+## v0.7.1
 
 The helpers provide a function to convert gst_info into buyer dict. Fixed it for dummy GSTs.
 
