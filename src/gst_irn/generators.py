@@ -103,7 +103,6 @@ def get_invoice(
     buyer_dtls,
     item_list,
     val_dtls,
-    ewb_dtls,
     **kwargs,
 ):
     return _to_camel_case_dict(
@@ -114,6 +113,5 @@ def get_invoice(
         buyer_dtls=buyer_dtls,
         item_list=item_list,
         val_dtls=val_dtls,
-        ewb_dtls=ewb_dtls,
         **kwargs,
     )

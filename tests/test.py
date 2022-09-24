@@ -131,9 +131,6 @@ class AuthTokenTestCase(unittest.TestCase):
                 igst_val=12,
                 tot_inv_val=112,
             ),
-            ewb_dtls=get_ewb_dtls(
-                distance=10,
-            ),
         )
         einvoice = session.generate_e_invoice(invoice)
         self.assertTrue("Irn" in einvoice, msg=einvoice)
@@ -194,7 +191,6 @@ class AuthTokenTestCase(unittest.TestCase):
                 }
             ],
             "ValDtls": {"TotInvVal": 112, "AssVal": 100, "IgstVal": 12},
-            "EwbDtls": {"Distance": 10},
         }
         einvoice = session.generate_e_invoice(invoice)
 
