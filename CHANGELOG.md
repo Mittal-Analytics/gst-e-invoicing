@@ -2,6 +2,10 @@
 
 The changelog was added version 0.3.0 onwards.
 
+## v0.8.0
+
+The helpers provide a function to convert gst_info into buyer dict. Fixed it for dummy GSTs.
+
 ## v0.7.0
 
 Removed EWB details from mandatory fields in generator functions.
@@ -22,3 +26,4 @@ Added `session.get` and `session.post` methods. This allows us to use the API wi
 
 - Added support for passthrough APIs provided by GSPs (GST Suvidha Providers).
 - Added docs around GSPs
+- Added changelog
