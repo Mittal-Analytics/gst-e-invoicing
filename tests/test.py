@@ -331,3 +331,24 @@ class AuthTokenTestCase(unittest.TestCase):
         }
         response = session.post(url, data=data)
         self.assertTrue("CancelDate" in response)
+
+    def test_to_buyer(self):
+        testing_gst_info = {
+            "Gstin": "34AACCC1596Q002",
+            "TradeName": None,
+            "LegalName": "Chartered Information Systems Private Limited",
+            "AddrBnm": None,
+            "AddrBno": None,
+            "AddrFlno": None,
+            "AddrSt": None,
+            "AddrLoc": None,
+            "StateCode": 34,
+            "AddrPncd": 560009,
+            "TxpType": None,
+            "Status": "ACT",
+            "BlkStatus": "U",
+            "DtReg": None,
+            "DtDReg": None,
+        }
+        buyer = to_buyer(testing_gst_info, States.ASSAM)
+        self.assertEqual(buyer["Addr1"], "")

@@ -8,7 +8,7 @@ def to_buyer(gst_info, place_of_supply):
         gst_info["AddrFlno"],
         gst_info["AddrSt"],
     ]
-    addr1 = ", ".join(part.strip() for part in parts if part.strip())
+    addr1 = ", ".join(part.strip() for part in parts if part and part.strip())
     return get_buyer_dtls(
         gstin=gst_info["Gstin"],
         lgl_nm=gst_info["LegalName"],
