@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>Getting Started - GST E-Invoicing Python Library</title>
+
+  <link rel="shortcut icon" href="img/favicon.png">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="fontello/css/fontello.css">
+
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  
+
+  
+  
+
+  <!--
+    http://www.mkdocs.org/user-guide/configuration/#google_analytics
+  -->
+  
+</head>
+
+<body>
+  <main>
+    <div class="content">
+      <nav class="mute">
+        <a href="https://mittal-analytics.github.io/gst-e-invoicing/" class="strong ink">Manuals</a> &#8594;
+        
+        
+	
+		
+			<span>Getting Started</span>
+		
+
+		
+	
+
+	
+
+	
+
+	
+
+	
+
+      </nav>
+
+      
+
+      
+      <article data-current-article="/gst-e-invoicing/">
+        <h1 id="getting-started">Getting Started</h1>
+<p>GitHub Link: <a href="https://github.com/Mittal-Analytics/gst-e-invoicing">https://github.com/Mittal-Analytics/gst-e-invoicing</a></p>
+<p>GST E-Invoicing library makes it easy to interact with GST E-Invoicing portal. It allows you to generate IRNs using your custom application.</p>
+<h2 id="quick-overview">Quick Overview</h2>
+<p>You can install the package using PIP</p>
+<pre><code class="language-bash">pip install gst-e-invoicing
+</code></pre>
+<p>You will also need to obtain the API credentials to use the library.</p>
+<ul>
+<li><a href="1.%20getting-credentials/">Guide for obtaining the API credentials</a></li>
+</ul>
+<p>The library supports both the direct access as well as pass-through APIs provided by GSPs.</p>
+<pre><code class="language-python">from gst_irn import Session, get_invoice, get_seller_dtls
+from gst_irn.codes import States
+
+with open('public_key.pem') as f:
+    public_key = f.read()
+
+session = Session(
+    'GSTIN',
+    client_id='CLIENT_ID',
+    client_secret='CLIENT_SECRET',
+    username='USERNAME',
+    password='PASSWORD',
+    public_key=public_key,
+    # use the sandbox url, or production url
+    # or pass-through APIs provided by GSPs
+    base_url='https://einv-apisandbox.nic.in',
+)
+
+session.generate_token()
+
+# create invoice object
+# can also use the helper functions for the same
+invoice = {
+    &quot;Version&quot;: &quot;1.1&quot;,
+    &quot;TranDtls&quot;: {&quot;TaxSch&quot;: &quot;GST&quot;, &quot;SupTyp&quot;: &quot;B2B&quot;},
+    &quot;DocDtls&quot;: {
+        &quot;Typ&quot;: &quot;inv&quot;,
+        &quot;No&quot;: &quot;221&quot;,
+        &quot;Dt&quot;: &quot;21/09/2021&quot;,
+    },
+    &quot;SellerDtls&quot;: {
+        &quot;Gstin&quot;: &quot;09GSTNUMBER1Z5&quot;,
+        &quot;LglNm&quot;: &quot;PARTY NAME&quot;,
+        &quot;Addr1&quot;: &quot;Seller Address&quot;,
+        &quot;Loc&quot;: &quot;City&quot;,
+        &quot;Pin&quot;: 111111,
+        &quot;Stcd&quot;: States.UTTAR_PRADESH.value,
+    },
+    &quot;BuyerDtls&quot;: {
+        &quot;Gstin&quot;: &quot;37GSTNUMBER2ZP&quot;,
+        &quot;LglNm&quot;: &quot;BUYER NAME&quot;,
+        &quot;Pos&quot;: States.KOLKATA.value,
+        &quot;Addr1&quot;: &quot;Buyer Address&quot;,
+        &quot;Loc&quot;: &quot;City&quot;,
+        &quot;Pin&quot;: 555555,
+        &quot;Stcd&quot;: States.KOLKATA.value,
+    },
+    &quot;ItemList&quot;: [
+        {
+            &quot;SlNo&quot;: &quot;1&quot;,
+            &quot;IsServc&quot;: &quot;Y&quot;,
+            &quot;HsnCd&quot;: &quot;998431&quot;,
+            &quot;UnitPrice&quot;: 100,
+            &quot;IgstAmt&quot;: 12,
+            &quot;TotAmt&quot;: 100,
+            &quot;AssAmt&quot;: 100,
+            &quot;GstRt&quot;: 12.0,
+            &quot;TotItemVal&quot;: 112,
+        }
+    ],
+    &quot;ValDtls&quot;: {&quot;TotInvVal&quot;: 112, &quot;AssVal&quot;: 100, &quot;IgstVal&quot;: 12},
+    &quot;EwbDtls&quot;: {&quot;Distance&quot;: 10},
+}
+
+# submit and get the e-invoice
+einvoice = session.generate_einvoice(invoice)
+
+# access irn and qr-code
+print(einvoice['Irn'])
+# prints irn
+
+# print qr-code
+from gst_irn.qr import get_qr_code_image_html
+qr_code_image = get_qr_code_image_html(einvoice['SignedQRCode'])
+qr_code_image
+# prints &lt;img src=&quot;...&quot;&gt;
+</code></pre>
+      </article>
+
+      
+      
+    </div>
+
+    
+  </main>
+
+  <div class="sidebar">
+    
+    <div role="search">
+      <form action="search.html" method="get">
+        <input type="search" name="q">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+    
+
+    <hr>
+
+    <nav class="mute">
+      <ul style="margin-left: -16px;">
+        
+          <li class="strong ink">Manuals Available</li>
+          
+            <li>
+              
+              
+	<a href="." >
+		Getting Started
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="1.%20getting-credentials/" >
+		Obtaining credentials for using the APIs
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="2.%20using-pass-through-apis/" >
+		Using passthrough APIs provided by GSPs
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="3.%20library-documentation/" >
+		Documentation of the Library
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="4.%20handling-errors/" >
+		Handling Errors
+	</a>
+
+            </li>
+          
+        
+      </ul>
+    </nav>
+  </div>
+
+  <script>var base_url = '.';</script>
+  <script src="js/theme.js"></script>
+  
+    <script src="search/main.js"></script>
+  
+
+  <!--
+  MkDocs version      : 1.3.1
+  Docs Build Date UTC : 2022-09-24 11:36:42.973837+00:00
+  -->
+</body>
+</html>

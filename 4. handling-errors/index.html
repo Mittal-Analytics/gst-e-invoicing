@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>Handling Errors - GST E-Invoicing Python Library</title>
+
+  <link rel="shortcut icon" href="../img/favicon.png">
+  <link rel="stylesheet" href="../css/normalize.css">
+  <link rel="stylesheet" href="../css/theme.css">
+  <link rel="stylesheet" href="../fontello/css/fontello.css">
+
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  
+
+  
+  
+
+  <!--
+    http://www.mkdocs.org/user-guide/configuration/#google_analytics
+  -->
+  
+</head>
+
+<body>
+  <main>
+    <div class="content">
+      <nav class="mute">
+        <a href="https://mittal-analytics.github.io/gst-e-invoicing/" class="strong ink">Manuals</a> &#8594;
+        
+        
+	
+
+	
+
+	
+
+	
+
+	
+		
+			<span>Handling Errors</span>
+		
+
+		
+	
+
+      </nav>
+
+      
+
+      
+      <article data-current-article="/gst-e-invoicing/4.%20handling-errors/">
+        <h1 id="handling-errors">Handling Errors</h1>
+<p>The <code>session</code> raises <code>RequestError</code> for failed requests. The error contains the raw response and can be catched like this:</p>
+<pre><code class="language-python">from gst_irn import RequestError
+
+try:
+    session.generate_e_invoice()
+except RequestError as err:
+    resp_json = err.args[1]
+</code></pre>
+      </article>
+
+      
+      <div class="margin-top-64">
+        <button id="mark-read-toggle" onclick="toggleRead(this)">Mark as read</button>
+      </div>
+      
+      
+    </div>
+
+    
+      <div class="flex flex-space-between smaller strong">
+        <div>
+          
+            <a href="../3.%20library-documentation/">&#8592; Documentation of the Library</a>
+          
+        </div>
+
+        <div>
+          
+        </div>
+      </div>
+    
+  </main>
+
+  <div class="sidebar">
+    
+    <div role="search">
+      <form action="../search.html" method="get">
+        <input type="search" name="q">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+    
+
+    <hr>
+
+    <nav class="mute">
+      <ul style="margin-left: -16px;">
+        
+          <li class="strong ink">Manuals Available</li>
+          
+            <li>
+              
+              
+	<a href=".." >
+		Getting Started
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="../1.%20getting-credentials/" >
+		Obtaining credentials for using the APIs
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="../2.%20using-pass-through-apis/" >
+		Using passthrough APIs provided by GSPs
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="../3.%20library-documentation/" >
+		Documentation of the Library
+	</a>
+
+            </li>
+          
+            <li>
+              
+              
+	<a href="./" >
+		Handling Errors
+	</a>
+
+            </li>
+          
+        
+      </ul>
+    </nav>
+  </div>
+
+  <script>var base_url = '..';</script>
+  <script src="../js/theme.js"></script>
+  
+    <script src="../search/main.js"></script>
+  
+
+  <!--
+  MkDocs version      : 1.3.1
+  Docs Build Date UTC : 2022-09-24 11:36:42.980153+00:00
+  -->
+</body>
+</html>
