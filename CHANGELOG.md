@@ -2,6 +2,10 @@
 
 The changelog was added version 0.3.0 onwards.
 
+## v0.7.0
+
+Removed EWB details from mandatory fields in generator functions.
+
 ## v0.6.0
 
 Improved conversion of address from gst_info.
