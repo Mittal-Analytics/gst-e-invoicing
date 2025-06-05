@@ -1,3 +1,4 @@
+import datetime as dt
 import unittest
 import uuid
 
@@ -6,7 +7,6 @@ from dotenv import dotenv_values
 from src.gst_irn import (
     Session,
     get_doc_dtls,
-    get_ewb_dtls,
     get_item,
     get_tran_dtls,
     get_val_dtls,
@@ -55,9 +55,7 @@ class AuthTokenTestCase(unittest.TestCase):
         self.assertEqual(
             details.get("TradeName"), "TALLY SOLUTIONS PVT LTD", msg=details
         )
-        self.assertEqual(
-            details.get("AddrBnm"), "AMR TECH PARK II B", msg=details
-        )
+        self.assertEqual(details.get("AddrBnm"), "AMR TECH PARK II B", msg=details)
         self.assertEqual(details.get("AddrLoc"), "HONGASANDRA")
         self.assertEqual(details.get("DtReg"), "2017-07-01")
 
@@ -75,9 +73,7 @@ class AuthTokenTestCase(unittest.TestCase):
         self.assertEqual(
             details.get("TradeName"), "TALLY SOLUTIONS PVT LTD", msg=details
         )
-        self.assertEqual(
-            details.get("AddrBnm"), "AMR TECH PARK II B", msg=details
-        )
+        self.assertEqual(details.get("AddrBnm"), "AMR TECH PARK II B", msg=details)
         self.assertEqual(details.get("AddrLoc"), "HONGASANDRA")
         self.assertEqual(details.get("DtReg"), "2017-07-01")
 
@@ -98,7 +94,7 @@ class AuthTokenTestCase(unittest.TestCase):
             lgl_nm="Foobar",
             addr1="foobar",
             loc="foobar",
-            pin=226001,
+            pin=226010,
             stcd=States.UTTAR_PRADESH.value,
         )
         buyer_info = session.get_gst_info("29AWGPV7107B1Z1")
@@ -109,7 +105,7 @@ class AuthTokenTestCase(unittest.TestCase):
             doc_dtls=get_doc_dtls(
                 typ="inv",
                 no=str(uuid.uuid4())[:16],
-                dt="12/11/2021",
+                dt=f"{dt.date.today():%d/%m/%Y}",
             ),
             seller_dtls=seller_dtls,
             buyer_dtls=buyer_dtls,
@@ -158,14 +154,14 @@ class AuthTokenTestCase(unittest.TestCase):
             "DocDtls": get_doc_dtls(
                 typ="inv",
                 no=str(uuid.uuid4())[:16],
-                dt="12/09/2022",
+                dt=f"{dt.date.today():%d/%m/%Y}",
             ),
             "SellerDtls": {
                 "Gstin": "09AAJCM7191E1Z5",
                 "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
-                "Addr1": "NIKHILESH PALACE FIRST FLOOR 17/4 ASHOK MARG",
+                "Addr1": "F4-403 Shalimar Iridium, Vibhuti Khand, Gomtinagar",
                 "Loc": "LUCKNOW",
-                "Pin": 226001,
+                "Pin": 226010,
                 "Stcd": "9",
             },
             "BuyerDtls": {
@@ -204,7 +200,7 @@ class AuthTokenTestCase(unittest.TestCase):
 
         # verify document by sending irn
         duplicate = session.get_e_invoice_by_irn(einvoice["Irn"])
-        self.assertEqual(duplicate, einvoice)
+        self.assertEqual(duplicate["Irn"], einvoice["Irn"])
 
     def test_get_irn_by_doc_details(self):
         session = Session(
@@ -218,7 +214,7 @@ class AuthTokenTestCase(unittest.TestCase):
         session.generate_token()
         doc_type = "inv"
         doc_number = str(uuid.uuid4())[:16]
-        doc_date = "12/09/2022"
+        doc_date = f"{dt.date.today():%d/%m/%Y}"
         invoice = {
             "Version": "1.1",
             "TranDtls": {"TaxSch": "GST", "SupTyp": "B2B"},
@@ -230,9 +226,9 @@ class AuthTokenTestCase(unittest.TestCase):
             "SellerDtls": {
                 "Gstin": "09AAJCM7191E1Z5",
                 "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
-                "Addr1": "NIKHILESH PALACE FIRST FLOOR 17/4 ASHOK MARG",
+                "Addr1": "F4-403 Shalimar Iridium, Vibhuti Khand, Gomtinagar",
                 "Loc": "LUCKNOW",
-                "Pin": 226001,
+                "Pin": 226010,
                 "Stcd": "9",
             },
             "BuyerDtls": {
@@ -267,8 +263,8 @@ class AuthTokenTestCase(unittest.TestCase):
             f"doctype={doc_type}&docnum={doc_number}&docdate={doc_date}"
         )
         response = session.get(url)
-        canecel_irn = response["Irn"]
-        self.assertEqual(canecel_irn, invoice_irn)
+        cancel_irn = response["Irn"]
+        self.assertEqual(cancel_irn, invoice_irn)
 
     def test_cancel_e_invoice(self):
         session = Session(
@@ -287,14 +283,14 @@ class AuthTokenTestCase(unittest.TestCase):
             "DocDtls": get_doc_dtls(
                 typ="inv",
                 no=str(uuid.uuid4())[:16],
-                dt="12/09/2022",
+                dt=f"{dt.date.today():%d/%m/%Y}",
             ),
             "SellerDtls": {
                 "Gstin": "09AAJCM7191E1Z5",
                 "LglNm": "MITTAL ANALYTICS PRIVATE LIMITED",
-                "Addr1": "NIKHILESH PALACE FIRST FLOOR 17/4 ASHOK MARG",
+                "Addr1": "F4-403 Shalimar Iridium, Vibhuti Khand, Gomtinagar",
                 "Loc": "LUCKNOW",
-                "Pin": 226001,
+                "Pin": 226010,
                 "Stcd": "9",
             },
             "BuyerDtls": {

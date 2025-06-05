@@ -122,3 +122,9 @@ vi .env
 # running tests
 python -m unittest
 ```
+
+### Releasing
+
+```
+just release
+```

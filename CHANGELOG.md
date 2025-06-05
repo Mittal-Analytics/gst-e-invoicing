@@ -2,6 +2,10 @@
 
 The changelog was added version 0.3.0 onwards.
 
+## v0.8.0
+
+Changed library for generating QR Code images: From `qrcode` to `segno` because it has no dependencies.
+
 ## v0.7.1
 
 The helpers provide a function to convert gst_info into buyer dict. Fixed it for dummy GSTs.
