@@ -131,6 +131,70 @@ class AuthTokenTestCase(unittest.TestCase):
         einvoice = session.generate_e_invoice(invoice)
         self.assertTrue("Irn" in einvoice, msg=einvoice)
 
+    def test_generate_e_invoice_sez_unit_as_buyer(self):
+        gsp_headers = {
+            "aspid": CONFIG["GSP_ASP_ID"],
+            "password": CONFIG["GSP_ASP_PASSWORD"],
+        }
+        session = Session(
+            gstin=CONFIG["GSP_GSTIN"],
+            client_id="",
+            client_secret="",
+            username=CONFIG["GSP_API_USERNAME"],
+            password=CONFIG["GSP_API_PASSWORD"],
+            public_key=CONFIG["PUBLIC_KEY"],
+            gsp_headers=gsp_headers,
+            base_url="https://gstsandbox.charteredinfo.com/",
+        )
+        session.generate_token()
+
+        place_of_supply = States.KARNATAKA.value
+        buyer_info = session.get_gst_info("32AABCZ2809A2ZV")
+        buyer_dtls = to_buyer(buyer_info, place_of_supply)
+        seller_dtls = get_seller_dtls(
+            gstin=CONFIG["GSP_GSTIN"],
+            lgl_nm="Foobar",
+            addr1="foobar",
+            loc="foobar",
+            pin=226010,
+            stcd=States.UTTAR_PRADESH.value,
+        )
+
+        invoice = {
+            "Version": "1.1",
+            "TranDtls": {"TaxSch": "GST", "SupTyp": "B2B"},
+            "DocDtls": get_doc_dtls(
+                typ="inv",
+                no=str(uuid.uuid4())[:16],
+                dt=f"{dt.date.today():%d/%m/%Y}",
+            ),
+            "SellerDtls": seller_dtls,
+            "BuyerDtls": buyer_dtls,
+            "ItemList": [
+                {
+                    "SlNo": "1",
+                    "IsServc": "Y",
+                    "HsnCd": "998313",
+                    "UnitPrice": 100,
+                    "IgstAmt": 0,
+                    "TotAmt": 100,
+                    "AssAmt": 100,
+                    "GstRt": 0.0,
+                    "TotItemVal": 100,
+                }
+            ],
+            "ValDtls": {"TotInvVal": 100, "AssVal": 100, "IgstVal": 0},
+        }
+        with self.assertRaises(RequestError) as err:
+            session.generate_e_invoice(invoice)
+        msg, resp = err.exception.args
+        self.assertEqual(msg, "action failed")
+        self.assertEqual(resp["ErrorDetails"][0]["ErrorCode"], "2246")
+        self.assertIn(
+            "Recepient  cannot be SEZ for - B2B transaction",
+            resp["ErrorDetails"][0]["ErrorMessage"],
+        )
+
     def test_qr_code(self):
         qr_code = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkVEQzU3REUxMzU4QjMwMEJBOUY3OTM0MEE2Njk2ODMxRjNDODUwNDciLCJ0eXAiOiJKV1QiLCJ4NXQiOiI3Y1Y5NFRXTE1BdXA5NU5BcG1sb01mUElVRWMifQ.eyJkYXRhIjoie1wiU2VsbGVyR3N0aW5cIjpcIjA5QUFKQ003MTkxRTFaNVwiLFwiQnV5ZXJHc3RpblwiOlwiMjlBV0dQVjcxMDdCMVoxXCIsXCJEb2NOb1wiOlwiMzVkN2RmOGQtZmNlNy00OVwiLFwiRG9jVHlwXCI6XCJJTlZcIixcIkRvY0R0XCI6XCIxMi8xMS8yMDIxXCIsXCJUb3RJbnZWYWxcIjoxMTIsXCJJdGVtQ250XCI6MSxcIk1haW5Ic25Db2RlXCI6XCI5OTg0MzFcIixcIklyblwiOlwiMzk5N2Q2ZGJlNTg1ZGJmYzkzYTg1NWNmMmFhZDFhNDEyYWM3ZGYwMjMxYWI3ODc1ODUxYTE1ZTFiYTNmNGRmNFwiLFwiSXJuRHRcIjpcIjIwMjItMDktMDkgMTM6MzM6MDBcIn0iLCJpc3MiOiJOSUMifQ.RPd1hjjuky7Xcs550YTUXXISjrd-g11OrUZn1pS9uDq1Er-wHNeFmWmI72kEbYsL-tofo5mepnqAVKfJDeUZlGk_s597IiZMobmJb2yvEtbPiOs5Hy7lTQav3iD3XtdWIoKp26WqH1RBSCAQQEpzRwMCVO6G7oh9Uq5kf4GI1wuyj0aJT7ThNOrsM5cEyAoDTfdWvkr9MJdNLFt7mBaLMfEAyHe4DJEWJaPENJoicRwifon6FV7zGXcz1Wbxjg12o31470vaaKs2niOD-GBpkQ7W0p-Ac47CG8u2Z_q6QdFflAAWYVzGINwff_bioyXFDVdzt7RJwCDY_a7RKVvd8g"
 
